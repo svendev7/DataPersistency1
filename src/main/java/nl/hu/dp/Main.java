@@ -1,9 +1,7 @@
 package nl.hu.dp;
 
 
-import classes.Reiziger;
-import classes.ReizigerDAO;
-import classes.ReizigerDAOPsql;
+import classes.*;
 
 import java.sql.*;
 import java.util.List;
@@ -23,7 +21,8 @@ public class Main {
         getConnection();
         System.out.println("Hello world!");
         ReizigerDAO rdao = new ReizigerDAOPsql(connection);
-        testReizigerDAO(rdao);
+        AdresDAO adao = new AdresDAOPsql(connection);
+        testAdresDAO(adao, rdao);
     }
     private static Connection getConnection() throws SQLException {
         if (connection == null) {
@@ -41,6 +40,43 @@ public class Main {
             connection = null;
         }
     }
+    private static void testAdresDAO(AdresDAO adao, ReizigerDAO rdao) throws SQLException {
+        System.out.println("\n---------- Test AdresDAO -------------");
+
+        List<Adres> adressen = adao.findAll();
+        System.out.println("[Test] AdresDAO.findAll() geeft de volgende adressen:");
+        for (Adres a : adressen) {
+            System.out.println(a);
+        }
+        System.out.println();
+
+        String postcode = "1234 AB";
+        String huisnummer = "42";
+        String straat = "Main Street";
+        String woonplaats = "City";
+
+        Reiziger reiziger = rdao.findById(880);
+        if (reiziger != null) {
+            reiziger = new Reiziger(893, "S", "", "Boers", java.sql.Date.valueOf("1981-03-14"));
+            rdao.save(reiziger);
+        }
+
+        Adres nieuwAdres = new Adres(18, postcode, huisnummer, straat, woonplaats, reiziger.getId());
+        adao.save(nieuwAdres);
+
+        reiziger.setAdres(nieuwAdres);
+
+        adressen = adao.findAll();
+        System.out.print("[Test] Eerst " + adressen.size() + " adressen, na AdresDAO.save() ");
+        System.out.println(adressen.size() + " adressen\n");
+        List<Reiziger> reizigers = rdao.findAll();
+        System.out.println("[Test] ReizigerDAO.findAll() geeft de volgende reizigers:");
+        for (Reiziger r : reizigers) {
+            System.out.println(r);
+        }
+        System.out.println();
+        closeConnection();
+    }
     private static void testReizigerDAO(ReizigerDAO rdao) throws SQLException {
 
         System.out.println("\n---------- Test ReizigerDAO -------------");
@@ -55,13 +91,12 @@ public class Main {
 
         // Maak een nieuwe reiziger aan en persisteer deze in de database
         String gbdatum = "1981-03-14";
-        Reiziger sietske = new Reiziger(77, "S", "", "Boers", java.sql.Date.valueOf(gbdatum));
+        Reiziger sietske = new Reiziger(1005, "S", "", "Boers", java.sql.Date.valueOf(gbdatum));
         System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.save() ");
         rdao.save(sietske);
         reizigers = rdao.findAll();
         System.out.println(reizigers.size() + " reizigers\n");
 
         // Voeg aanvullende tests van de ontbrekende CRUD-operaties in.
-        closeConnection();
     }
 }
