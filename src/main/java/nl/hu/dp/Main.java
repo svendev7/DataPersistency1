@@ -57,11 +57,11 @@ public class Main {
 
         Reiziger reiziger = rdao.findById(880);
         if (reiziger != null) {
-            reiziger = new Reiziger(893, "S", "", "Boers", java.sql.Date.valueOf("1981-03-14"));
+            reiziger = new Reiziger(894, "S", "", "Boers", java.sql.Date.valueOf("1981-03-14"));
             rdao.save(reiziger);
         }
 
-        Adres nieuwAdres = new Adres(18, postcode, huisnummer, straat, woonplaats, reiziger.getId());
+        Adres nieuwAdres = new Adres(19, postcode, huisnummer, straat, woonplaats, reiziger.getId());
         adao.save(nieuwAdres);
 
         reiziger.setAdres(nieuwAdres);

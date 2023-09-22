@@ -10,4 +10,5 @@ public interface ReizigerDAO {
     void save(Reiziger reiziger) throws SQLException;
     void update(Reiziger reiziger) throws SQLException;
     void delete(Reiziger reiziger) throws SQLException;
+    List<Reiziger> findByOVChipkaart(OVChipkaart ovChipkaart);
 }

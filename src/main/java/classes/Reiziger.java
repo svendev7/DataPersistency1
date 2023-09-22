@@ -1,6 +1,7 @@
 package classes;
 
 import java.sql.Date;
+import java.util.List;
 
 public class Reiziger {
     private int reiziger_id;
@@ -9,6 +10,7 @@ public class Reiziger {
     private String achternaam;
     private Date geboortedatum;
     private Adres adres;
+    private List<OVChipkaart> ovChipkaarten;
 
     // Constructors
     public Reiziger() {
@@ -23,6 +25,14 @@ public class Reiziger {
     }
 
     // Getters and Setters
+    public List<OVChipkaart> getOvChipkaarten() {
+        return ovChipkaarten;
+    }
+
+    public void setOvChipkaarten(List<OVChipkaart> ovChipkaarten) {
+        this.ovChipkaarten = ovChipkaarten;
+    }
+
     public Adres getAdres() {
         return adres;
     }

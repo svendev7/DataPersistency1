@@ -114,4 +114,34 @@ public class ReizigerDAOPsql implements ReizigerDAO {
 
         return new Reiziger(reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum);
     }
+    @Override
+    public List<Reiziger> findByOVChipkaart(OVChipkaart ovChipkaart) {
+        List<Reiziger> reizigers = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * FROM reiziger " +
+                            "WHERE reiziger_id IN (SELECT reiziger_id FROM ov_chipkaart WHERE kaart_nummer = ?)"
+            );
+
+            statement.setInt(1, ovChipkaart.getKaartNummer());
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                int reizigerId = resultSet.getInt("reiziger_id");
+                String voorletters = resultSet.getString("voorletters");
+                String tussenvoegsel = resultSet.getString("tussenvoegsel");
+                String achternaam = resultSet.getString("achternaam");
+                Date geboortedatum = resultSet.getDate("geboortedatum");
+
+                Reiziger reiziger = new Reiziger(reizigerId, voorletters, tussenvoegsel, achternaam, geboortedatum);
+                reizigers.add(reiziger);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle errors appropriately
+        }
+
+        return reizigers;
+    }
 }
