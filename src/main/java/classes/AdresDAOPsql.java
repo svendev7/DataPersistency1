@@ -28,7 +28,6 @@ public class AdresDAOPsql implements AdresDAO {
                 String straat = resultSet.getString("straat");
                 String woonplaats = resultSet.getString("woonplaats");
                 int reiziger_id = resultSet.getInt("reiziger_id");
-
                 Adres adres = new Adres(adres_id, postcode, huisnummer, straat, woonplaats, reiziger_id);
                 adressen.add(adres);
             }
@@ -93,6 +92,15 @@ public class AdresDAOPsql implements AdresDAO {
         }
     }
 
+    private Adres createAdresFromResultSet(ResultSet resultSet) throws SQLException {
+        int adres_id = resultSet.getInt("adres_id");
+        String postcode = resultSet.getString("postcode");
+        String huisnummer = resultSet.getString("huisnummer");
+        String straat = resultSet.getString("straat");
+        String woonplaats = resultSet.getString("woonplaats");
+        int reiziger_id = resultSet.getInt("reiziger_id");
+        return new Adres(adres_id, postcode, huisnummer, straat, woonplaats, reiziger_id);
+    }
     @Override
     public Adres findByReiziger(int reiziger_id) throws SQLException {
         String query = "SELECT * FROM adres WHERE reiziger_id = ?";
@@ -107,16 +115,5 @@ public class AdresDAOPsql implements AdresDAO {
         }
 
         return null;
-    }
-
-    private Adres createAdresFromResultSet(ResultSet resultSet) throws SQLException {
-        int adres_id = resultSet.getInt("adres_id");
-        String postcode = resultSet.getString("postcode");
-        String huisnummer = resultSet.getString("huisnummer");
-        String straat = resultSet.getString("straat");
-        String woonplaats = resultSet.getString("woonplaats");
-        int reiziger_id = resultSet.getInt("reiziger_id");
-
-        return new Adres(adres_id, postcode, huisnummer, straat, woonplaats, reiziger_id);
     }
 }

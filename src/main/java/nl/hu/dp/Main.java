@@ -57,24 +57,26 @@ public class Main {
 
         Reiziger reiziger = rdao.findById(880);
         if (reiziger != null) {
-            reiziger = new Reiziger(894, "S", "", "Boers", java.sql.Date.valueOf("1981-03-14"));
+            reiziger = new Reiziger(901, "S", "", "Boers", java.sql.Date.valueOf("1981-03-14"));
             rdao.save(reiziger);
         }
 
-        Adres nieuwAdres = new Adres(19, postcode, huisnummer, straat, woonplaats, reiziger.getId());
+        Adres nieuwAdres = new Adres(21, postcode, huisnummer, straat, woonplaats, reiziger.getId());
         adao.save(nieuwAdres);
 
+        // Update the Reiziger with the new Adres
         reiziger.setAdres(nieuwAdres);
+        rdao.update(reiziger); // Update the Reiziger to associate it with the new Adres
 
+        System.out.println("[Test] Reiziger met adres:");
+        System.out.println(reiziger);
+
+        System.out.println("\n[Test] Adressen na toevoegen van adres aan reiziger:");
         adressen = adao.findAll();
-        System.out.print("[Test] Eerst " + adressen.size() + " adressen, na AdresDAO.save() ");
-        System.out.println(adressen.size() + " adressen\n");
-        List<Reiziger> reizigers = rdao.findAll();
-        System.out.println("[Test] ReizigerDAO.findAll() geeft de volgende reizigers:");
-        for (Reiziger r : reizigers) {
-            System.out.println(r);
+        for (Adres a : adressen) {
+            System.out.println(a);
         }
-        System.out.println();
+
         closeConnection();
     }
     private static void testReizigerDAO(ReizigerDAO rdao) throws SQLException {

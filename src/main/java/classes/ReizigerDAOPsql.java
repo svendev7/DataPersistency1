@@ -112,6 +112,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         String achternaam = resultSet.getString("achternaam");
         Date geboortedatum = resultSet.getDate("geboortedatum");
 
+
         return new Reiziger(reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum);
     }
     @Override
@@ -143,5 +144,40 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         }
 
         return reizigers;
+    }
+    @Override
+    public void saveAdres(Reiziger reiziger) throws SQLException {
+        if (reiziger.getAdres() != null) {
+            String query = "INSERT INTO adres (postcode, huisnummer, straat, woonplaats, reiziger_id) " +
+                    "VALUES (?, ?, ?, ?, ?)";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                Adres adres = reiziger.getAdres();
+                statement.setString(1, adres.getPostcode());
+                statement.setString(2, adres.getHuisnummer());
+                statement.setString(3, adres.getStraat());
+                statement.setString(4, adres.getWoonplaats());
+                statement.setInt(5, reiziger.getId()); // Assuming reiziger_id is the primary key of the reiziger table
+                statement.executeUpdate();
+            }
+        }
+    }
+
+    @Override
+    public void updateAdres(Reiziger reiziger) throws SQLException {
+        if (reiziger.getAdres() != null) {
+            String query = "UPDATE adres SET postcode = ?, huisnummer = ?, straat = ?, woonplaats = " +
+                    "WHERE reiziger_id = ?";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                Adres adres = reiziger.getAdres();
+                statement.setString(1, adres.getPostcode());
+                statement.setString(2, adres.getHuisnummer());
+                statement.setString(3, adres.getStraat());
+                statement.setString(4, adres.getWoonplaats());
+                statement.setInt(5, reiziger.getId()); // Assuming reiziger_id is the primary key of the reiziger table
+                statement.executeUpdate();
+            }
+        }
     }
 }
