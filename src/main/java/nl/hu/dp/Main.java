@@ -3,6 +3,7 @@ package nl.hu.dp;
 
 import classes.*;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.List;
 
@@ -22,7 +23,9 @@ public class Main {
         System.out.println("Hello world!");
         ReizigerDAO rdao = new ReizigerDAOPsql(connection);
         AdresDAO adao = new AdresDAOPsql(connection);
-        testAdresDAO(adao, rdao);
+//        testAdresDAO(adao, rdao);
+        OVChipkaartDAO ovdao = new OVChipkaartDAOPsql(connection);
+        testReizigerOVChipkaartRelationship(rdao, ovdao);
     }
     private static Connection getConnection() throws SQLException {
         if (connection == null) {
@@ -100,5 +103,32 @@ public class Main {
         System.out.println(reizigers.size() + " reizigers\n");
 
         // Voeg aanvullende tests van de ontbrekende CRUD-operaties in.
+    }
+    private static void testReizigerOVChipkaartRelationship(ReizigerDAO rdao, OVChipkaartDAO ovdao) throws SQLException {
+        System.out.println("\n---------- Test Reiziger and OVChipkaart Relationship -------------");
+
+        // Create a new Reiziger
+        Reiziger reiziger = new Reiziger(1007, "T", "van", "Dijk", java.sql.Date.valueOf("1990-05-20"));
+        rdao.save(reiziger);
+
+        // Create a new OVChipkaart for the Reiziger
+        OVChipkaart ovChipkaart = new OVChipkaart(12346, java.sql.Date.valueOf("2024-12-31"), 2, BigDecimal.valueOf(50.0), reiziger);
+        ovdao.save(ovChipkaart);
+
+        // Find Reiziger by OVChipkaart
+        List<Reiziger> reizigers = rdao.findByOVChipkaart(ovChipkaart);
+        System.out.println("[Test] Reizigers with OVChipkaart:");
+        for (Reiziger r : reizigers) {
+            System.out.println(r);
+        }
+
+        // Find OVChipkaart by Reiziger
+
+        List<OVChipkaart> foundOVChipkaarten = ovdao.findByReiziger(reiziger);
+        System.out.println("[Test] OVChipkaart(s) for Reiziger:");
+        for (OVChipkaart ov : foundOVChipkaarten) {
+            System.out.println(ov);
+        }
+
     }
 }
