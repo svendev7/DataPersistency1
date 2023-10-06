@@ -1,5 +1,6 @@
 package classes;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface OVChipkaartDAO {
@@ -8,4 +9,5 @@ public interface OVChipkaartDAO {
     boolean delete(OVChipkaart ovChipkaart);
     OVChipkaart findByKaartNummer(int kaartNummer);
     List<OVChipkaart> findByReiziger(Reiziger reiziger);
+    List<OVChipkaart> findByProduct(Product product) throws SQLException;
 }

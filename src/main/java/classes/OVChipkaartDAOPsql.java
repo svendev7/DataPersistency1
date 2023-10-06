@@ -152,4 +152,35 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
 
         return null;
     }
+    @Override
+    public List<OVChipkaart> findByProduct(Product product) throws SQLException {
+        List<OVChipkaart> ovChipkaarten = new ArrayList<>();
+        String query = "SELECT o.* FROM ov_chipkaart o " +
+                "INNER JOIN ov_chipkaart_product ocp ON o.kaart_nummer = ocp.kaart_nummer " +
+                "WHERE ocp.product_nummer = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, product.getProduct_nummer());
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    OVChipkaart ovChipkaart = createOVChipkaartFromResultSet(resultSet);
+                    ovChipkaarten.add(ovChipkaart);
+                }
+            }
+        }
+
+        return ovChipkaarten;
+    }
+    private OVChipkaart createOVChipkaartFromResultSet(ResultSet resultSet) throws SQLException {
+        int kaartNummer = resultSet.getInt("kaart_nummer");
+        Date geldigTot = resultSet.getDate("geldig_tot");
+        int klasse = resultSet.getInt("klasse");
+        BigDecimal saldo = resultSet.getBigDecimal("saldo");
+        int reizigerId = resultSet.getInt("reiziger_id");
+
+        ReizigerDAO reizigerDAO = new ReizigerDAOPsql(connection);
+        Reiziger reiziger = reizigerDAO.findById(reizigerId);
+
+        return new OVChipkaart(kaartNummer, geldigTot, klasse, saldo, reiziger);
+    }
 }

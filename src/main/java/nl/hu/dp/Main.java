@@ -23,9 +23,12 @@ public class Main {
         System.out.println("Hello world!");
         ReizigerDAO rdao = new ReizigerDAOPsql(connection);
         AdresDAO adao = new AdresDAOPsql(connection);
-        testAdresDAO(adao, rdao);
         OVChipkaartDAO ovdao = new OVChipkaartDAOPsql(connection);
+        ProductDAO pdao = new ProductDAOPsql(connection);
+//        testAdresDAO(adao, rdao);
 //        testReizigerOVChipkaartRelationship(rdao, ovdao);
+//        testReizigerDAO(rdao);
+        testProductAndOVChipkaart(pdao, ovdao, rdao);
     }
     private static Connection getConnection() throws SQLException {
         if (connection == null) {
@@ -130,5 +133,30 @@ public class Main {
             System.out.println(ov);
         }
 
+    }
+    private static void testProductAndOVChipkaart(ProductDAO pdao, OVChipkaartDAO ovdao, ReizigerDAO rdao) throws SQLException {
+        System.out.println("\n---------- Test Product and OVChipkaart -------------");
+
+        Product product1 = new Product(17, "Product A", "Description A", 10);
+        pdao.save(product1);
+        Reiziger reiziger = new Reiziger(669, "T", "van", "Dijk", java.sql.Date.valueOf("1990-05-20"));
+        rdao.save(reiziger);
+        OVChipkaart ovChipkaart1 = new OVChipkaart(28, java.sql.Date.valueOf("2024-12-31"), 2, BigDecimal.valueOf(50.0), reiziger);
+        ovdao.save(ovChipkaart1);
+
+        product1.addOVChipkaart(ovChipkaart1);
+        pdao.update(product1);
+
+        List<Product> productsForOVChipkaart1 = pdao.findByOVChipkaart(ovChipkaart1);
+        System.out.println("[Test] Products associated with OVChipkaart:");
+        for (Product product : productsForOVChipkaart1) {
+            System.out.println(product);
+        }
+
+        List<OVChipkaart> ovChipkaartenForProduct1 = ovdao.findByProduct(product1);
+        System.out.println("[Test] OVChipkaarten associated with Product 1:");
+        for (OVChipkaart ovChipkaart : ovChipkaartenForProduct1) {
+            System.out.println(ovChipkaart);
+        }
     }
 }
