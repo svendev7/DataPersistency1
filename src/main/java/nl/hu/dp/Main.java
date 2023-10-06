@@ -23,9 +23,9 @@ public class Main {
         System.out.println("Hello world!");
         ReizigerDAO rdao = new ReizigerDAOPsql(connection);
         AdresDAO adao = new AdresDAOPsql(connection);
-//        testAdresDAO(adao, rdao);
+        testAdresDAO(adao, rdao);
         OVChipkaartDAO ovdao = new OVChipkaartDAOPsql(connection);
-        testReizigerOVChipkaartRelationship(rdao, ovdao);
+//        testReizigerOVChipkaartRelationship(rdao, ovdao);
     }
     private static Connection getConnection() throws SQLException {
         if (connection == null) {
@@ -60,11 +60,11 @@ public class Main {
 
         Reiziger reiziger = rdao.findById(880);
         if (reiziger != null) {
-            reiziger = new Reiziger(901, "S", "", "Boers", java.sql.Date.valueOf("1981-03-14"));
+            reiziger = new Reiziger(906, "S", "", "Boers", java.sql.Date.valueOf("1981-03-14"));
             rdao.save(reiziger);
         }
 
-        Adres nieuwAdres = new Adres(21, postcode, huisnummer, straat, woonplaats, reiziger.getId());
+        Adres nieuwAdres = new Adres(26, postcode, huisnummer, straat, woonplaats, reiziger.getId());
         adao.save(nieuwAdres);
 
         // Update the Reiziger with the new Adres

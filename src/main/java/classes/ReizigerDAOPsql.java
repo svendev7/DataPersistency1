@@ -17,28 +17,29 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     @Override
     public List<Reiziger> findAll() throws SQLException {
         List<Reiziger> reizigers = new ArrayList<>();
-        String query = "SELECT reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum FROM reiziger";
+        String query = "SELECT r.reiziger_id, r.voorletters, r.tussenvoegsel, r.achternaam, r.geboortedatum, a.adres_id, a.postcode, a.huisnummer, a.straat, a.woonplaats " +
+                "FROM reiziger r " +
+                "LEFT JOIN adres a ON r.reiziger_id = a.reiziger_id";
 
         try (PreparedStatement statement = connection.prepareStatement(query);
              ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 Reiziger reiziger = createReizigerFromResultSet(resultSet);
-                AdresDAO adresDAO = new AdresDAOPsql(connection);
-                Adres adres = adresDAO.findByReiziger(reiziger.getId());
-                reiziger.setAdres(adres);
                 reizigers.add(reiziger);
             }
         }
 
         return reizigers;
     }
-
     @Override
-    public Reiziger findById(int id) throws SQLException {
-        String query = "SELECT reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum FROM reiziger WHERE reiziger_id = ?";
+    public Reiziger findById(int reiziger_id) throws SQLException {
+        String query = "SELECT r.reiziger_id, r.voorletters, r.tussenvoegsel, r.achternaam, r.geboortedatum, a.adres_id, a.postcode, a.huisnummer, a.straat, a.woonplaats " +
+                "FROM reiziger r " +
+                "LEFT JOIN adres a ON r.reiziger_id = a.reiziger_id " +
+                "WHERE r.reiziger_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, id);
+            statement.setInt(1, reiziger_id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return createReizigerFromResultSet(resultSet);
@@ -52,7 +53,10 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     @Override
     public List<Reiziger> findByAchternaam(String achternaam) throws SQLException {
         List<Reiziger> reizigers = new ArrayList<>();
-        String query = "SELECT * FROM reiziger WHERE achternaam = ?";
+        String query = "SELECT r.reiziger_id, r.voorletters, r.tussenvoegsel, r.achternaam, r.geboortedatum, a.adres_id, a.postcode, a.huisnummer, a.straat, a.woonplaats " +
+                "FROM reiziger r " +
+                "LEFT JOIN adres a ON r.reiziger_id = a.reiziger_id " +
+                "WHERE r.achternaam = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, achternaam);
@@ -78,6 +82,12 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             statement.setString(4, reiziger.getAchternaam());
             statement.setDate(5, reiziger.getGeboortedatum());
             statement.executeUpdate();
+
+            AdresDAO adresDAO = new AdresDAOPsql(connection);
+            if (reiziger.getAdres() != null) {
+                reiziger.getAdres().setReiziger_id(reiziger.getId());
+                adresDAO.save(reiziger.getAdres());
+            }
         }
     }
 
@@ -92,11 +102,22 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             statement.setDate(4, reiziger.getGeboortedatum());
             statement.setInt(5, reiziger.getId());
             statement.executeUpdate();
+
+            AdresDAO adresDAO = new AdresDAOPsql(connection);
+            if (reiziger.getAdres() != null) {
+                reiziger.getAdres().setReiziger_id(reiziger.getId());
+                adresDAO.update(reiziger.getAdres());
+            }
         }
     }
 
     @Override
     public void delete(Reiziger reiziger) throws SQLException {
+        AdresDAO adresDAO = new AdresDAOPsql(connection);
+        if (reiziger.getAdres() != null) {
+            adresDAO.delete(reiziger.getAdres());
+        }
+
         String query = "DELETE FROM reiziger WHERE reiziger_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -105,6 +126,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         }
     }
 
+
     private Reiziger createReizigerFromResultSet(ResultSet resultSet) throws SQLException {
         int reiziger_id = resultSet.getInt("reiziger_id");
         String voorletters = resultSet.getString("voorletters");
@@ -112,8 +134,15 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         String achternaam = resultSet.getString("achternaam");
         Date geboortedatum = resultSet.getDate("geboortedatum");
 
+        String postcode = resultSet.getString("postcode");
+        String huisnummer = resultSet.getString("huisnummer");
+        String straat = resultSet.getString("straat");
+        String woonplaats = resultSet.getString("woonplaats");
+        int adres_id = resultSet.getInt("adres_id");
 
-        return new Reiziger(reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum);
+        Adres adres = new Adres(adres_id, postcode, huisnummer, straat, woonplaats, reiziger_id);
+
+        return new Reiziger(reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum, adres);
     }
     @Override
     public List<Reiziger> findByOVChipkaart(OVChipkaart ovChipkaart) {
@@ -144,40 +173,5 @@ public class ReizigerDAOPsql implements ReizigerDAO {
         }
 
         return reizigers;
-    }
-    @Override
-    public void saveAdres(Reiziger reiziger) throws SQLException {
-        if (reiziger.getAdres() != null) {
-            String query = "INSERT INTO adres (postcode, huisnummer, straat, woonplaats, reiziger_id) " +
-                    "VALUES (?, ?, ?, ?, ?)";
-
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                Adres adres = reiziger.getAdres();
-                statement.setString(1, adres.getPostcode());
-                statement.setString(2, adres.getHuisnummer());
-                statement.setString(3, adres.getStraat());
-                statement.setString(4, adres.getWoonplaats());
-                statement.setInt(5, reiziger.getId()); // Assuming reiziger_id is the primary key of the reiziger table
-                statement.executeUpdate();
-            }
-        }
-    }
-
-    @Override
-    public void updateAdres(Reiziger reiziger) throws SQLException {
-        if (reiziger.getAdres() != null) {
-            String query = "UPDATE adres SET postcode = ?, huisnummer = ?, straat = ?, woonplaats = " +
-                    "WHERE reiziger_id = ?";
-
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                Adres adres = reiziger.getAdres();
-                statement.setString(1, adres.getPostcode());
-                statement.setString(2, adres.getHuisnummer());
-                statement.setString(3, adres.getStraat());
-                statement.setString(4, adres.getWoonplaats());
-                statement.setInt(5, reiziger.getId()); // Assuming reiziger_id is the primary key of the reiziger table
-                statement.executeUpdate();
-            }
-        }
     }
 }

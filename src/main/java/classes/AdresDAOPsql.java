@@ -69,7 +69,7 @@ public class AdresDAOPsql implements AdresDAO {
 
     @Override
     public void update(Adres adres) throws SQLException {
-        String query = "UPDATE adres SET postcode = ?, huisnummer = ?, straat = ?, woonplaats = ?, reiziger_id = ? WHERE id = ?";
+        String query = "UPDATE adres SET postcode = ?, huisnummer = ?, straat = ?, woonplaats = ?, reiziger_id = ? WHERE adres_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, adres.getPostcode());
@@ -84,7 +84,7 @@ public class AdresDAOPsql implements AdresDAO {
 
     @Override
     public void delete(Adres adres) throws SQLException {
-        String query = "DELETE FROM adres WHERE id = ?";
+        String query = "DELETE FROM adres WHERE adres_id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, adres.getAdres_id());

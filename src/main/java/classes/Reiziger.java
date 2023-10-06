@@ -23,6 +23,14 @@ public class Reiziger {
         this.achternaam = achternaam;
         this.geboortedatum = geboortedatum;
     }
+    public Reiziger(int reiziger_id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum, Adres adres) {
+        this.reiziger_id = reiziger_id;
+        this.voorletters = voorletters;
+        this.tussenvoegsel = tussenvoegsel;
+        this.achternaam = achternaam;
+        this.geboortedatum = geboortedatum;
+        this.adres = adres;
+    }
 
     // Getters and Setters
     public List<OVChipkaart> getOvChipkaarten() {
