@@ -9,6 +9,7 @@ import java.util.List;
 import java.sql.Date;
 public class ReizigerDAOPsql implements ReizigerDAO {
     private Connection connection;
+    private OVChipkaartDAO ovChipkaartDAO;
 
     public ReizigerDAOPsql(Connection connection) {
         this.connection = connection;
@@ -82,7 +83,12 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             statement.setString(4, reiziger.getAchternaam());
             statement.setDate(5, reiziger.getGeboortedatum());
             statement.executeUpdate();
-
+            if (reiziger.getOvChipkaarten() != null) {
+                for (OVChipkaart ovChipkaart : reiziger.getOvChipkaarten()) {
+                    ovChipkaart.setReiziger(reiziger);
+                    ovChipkaartDAO.save(ovChipkaart);
+                }
+            }
             AdresDAO adresDAO = new AdresDAOPsql(connection);
             if (reiziger.getAdres() != null) {
                 reiziger.getAdres().setReiziger_id(reiziger.getId());
@@ -102,7 +108,12 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             statement.setDate(4, reiziger.getGeboortedatum());
             statement.setInt(5, reiziger.getId());
             statement.executeUpdate();
-
+            if (reiziger.getOvChipkaarten() != null) {
+                for (OVChipkaart ovChipkaart : reiziger.getOvChipkaarten()) {
+                    ovChipkaart.setReiziger(reiziger);
+                    ovChipkaartDAO.update(ovChipkaart);
+                }
+            }
             AdresDAO adresDAO = new AdresDAOPsql(connection);
             if (reiziger.getAdres() != null) {
                 reiziger.getAdres().setReiziger_id(reiziger.getId());

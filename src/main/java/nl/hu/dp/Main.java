@@ -26,9 +26,9 @@ public class Main {
         OVChipkaartDAO ovdao = new OVChipkaartDAOPsql(connection);
         ProductDAO pdao = new ProductDAOPsql(connection);
 //        testAdresDAO(adao, rdao);
-//        testReizigerOVChipkaartRelationship(rdao, ovdao);
+        testReizigerOVChipkaartRelationship(rdao, ovdao);
 //        testReizigerDAO(rdao);
-        testProductAndOVChipkaart(pdao, ovdao, rdao);
+//        testProductAndOVChipkaart(pdao, ovdao, rdao);
     }
     private static Connection getConnection() throws SQLException {
         if (connection == null) {
@@ -111,12 +111,14 @@ public class Main {
         System.out.println("\n---------- Test Reiziger and OVChipkaart Relationship -------------");
 
         // Create a new Reiziger
-        Reiziger reiziger = new Reiziger(1007, "T", "van", "Dijk", java.sql.Date.valueOf("1990-05-20"));
+        Reiziger reiziger = new Reiziger(1009, "T", "van", "Dijk", java.sql.Date.valueOf("1990-05-20"));
         rdao.save(reiziger);
 
         // Create a new OVChipkaart for the Reiziger
-        OVChipkaart ovChipkaart = new OVChipkaart(12346, java.sql.Date.valueOf("2024-12-31"), 2, BigDecimal.valueOf(50.0), reiziger);
+        OVChipkaart ovChipkaart = new OVChipkaart(12348, java.sql.Date.valueOf("2024-12-31"), 2, BigDecimal.valueOf(50.0), reiziger);
         ovdao.save(ovChipkaart);
+        OVChipkaart ovChipkaart1 = new OVChipkaart(12349, java.sql.Date.valueOf("2024-12-31"), 2, BigDecimal.valueOf(50.0), reiziger);
+        ovdao.save(ovChipkaart1);
 
         // Find Reiziger by OVChipkaart
         List<Reiziger> reizigers = rdao.findByOVChipkaart(ovChipkaart);

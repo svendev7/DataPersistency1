@@ -51,7 +51,15 @@ public class Reiziger {
     public int getId() {
         return reiziger_id;
     }
+    public void addOVChipkaart(OVChipkaart ovChipkaart) {
+        ovChipkaarten.add(ovChipkaart);
+        ovChipkaart.setReiziger(this);
+    }
 
+    public void removeOVChipkaart(OVChipkaart ovChipkaart) {
+        ovChipkaarten.remove(ovChipkaart);
+        ovChipkaart.setReiziger(null);
+    }
     public void setId(int id) {
         this.reiziger_id = id;
     }
