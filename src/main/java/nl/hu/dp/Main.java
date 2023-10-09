@@ -10,6 +10,7 @@ import java.util.List;
 
 public class Main {
     private static Connection connection;
+
     /**
      * P2. Reiziger DAO: persistentie van een klasse
      * <p>
@@ -26,8 +27,8 @@ public class Main {
         OVChipkaartDAO ovdao = new OVChipkaartDAOPsql(connection);
         ProductDAO pdao = new ProductDAOPsql(connection);
 //        testAdresDAO(adao, rdao);
-        testReizigerOVChipkaartRelationship(rdao, ovdao);
-//        testReizigerDAO(rdao);
+//        testReizigerOVChipkaartRelationship(rdao, ovdao);
+        testReizigerDAO(rdao);
 //        testProductAndOVChipkaart(pdao, ovdao, rdao);
     }
     private static Connection getConnection() throws SQLException {

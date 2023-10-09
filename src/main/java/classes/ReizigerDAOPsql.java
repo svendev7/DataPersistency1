@@ -10,9 +10,12 @@ import java.sql.Date;
 public class ReizigerDAOPsql implements ReizigerDAO {
     private Connection connection;
     private OVChipkaartDAO ovChipkaartDAO;
+    private AdresDAO adresDAO;
 
     public ReizigerDAOPsql(Connection connection) {
         this.connection = connection;
+        this.adresDAO = new AdresDAOPsql(connection);
+        this.ovChipkaartDAO = new OVChipkaartDAOPsql(connection);
     }
 
     @Override
@@ -89,7 +92,6 @@ public class ReizigerDAOPsql implements ReizigerDAO {
                     ovChipkaartDAO.save(ovChipkaart);
                 }
             }
-            AdresDAO adresDAO = new AdresDAOPsql(connection);
             if (reiziger.getAdres() != null) {
                 reiziger.getAdres().setReiziger_id(reiziger.getId());
                 adresDAO.save(reiziger.getAdres());
@@ -114,7 +116,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
                     ovChipkaartDAO.update(ovChipkaart);
                 }
             }
-            AdresDAO adresDAO = new AdresDAOPsql(connection);
+
             if (reiziger.getAdres() != null) {
                 reiziger.getAdres().setReiziger_id(reiziger.getId());
                 adresDAO.update(reiziger.getAdres());
@@ -124,7 +126,6 @@ public class ReizigerDAOPsql implements ReizigerDAO {
 
     @Override
     public void delete(Reiziger reiziger) throws SQLException {
-        AdresDAO adresDAO = new AdresDAOPsql(connection);
         if (reiziger.getAdres() != null) {
             adresDAO.delete(reiziger.getAdres());
         }
