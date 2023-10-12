@@ -12,6 +12,14 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     private OVChipkaartDAO ovChipkaartDAO;
     private AdresDAO adresDAO;
 
+    public void setOvChipkaartDAO(OVChipkaartDAO ovChipkaartDAO) {
+        this.ovChipkaartDAO = ovChipkaartDAO;
+    }
+
+    public void setAdresDAO(AdresDAO adresDAO) {
+        this.adresDAO = adresDAO;
+    }
+
     public ReizigerDAOPsql(Connection connection) {
         this.connection = connection;
     }

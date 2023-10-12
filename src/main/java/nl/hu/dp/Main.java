@@ -26,6 +26,8 @@ public class Main {
         AdresDAO adao = new AdresDAOPsql(connection);
         OVChipkaartDAO ovdao = new OVChipkaartDAOPsql(connection);
         ProductDAO pdao = new ProductDAOPsql(connection);
+        rdao.setAdresDAO(adao);
+        rdao.setOvChipkaartDAO(ovdao);
 //        testAdresDAO(adao, rdao);
         testReizigerOVChipkaartRelationship(rdao, ovdao, adao);
 //        testReizigerDAO(rdao, adao, ovdao);
@@ -86,8 +88,7 @@ public class Main {
 
         closeConnection();
     }
-    private static void testReizigerDAO(ReizigerDAO rdao, AdresDAO adao, OVChipkaartDAO ovdao) throws SQLException {
-
+    private static void testReizigerDAO(ReizigerDAO rdao) throws SQLException {
         System.out.println("\n---------- Test ReizigerDAO -------------");
 
         // Haal alle reizigers op uit de database
@@ -100,7 +101,7 @@ public class Main {
 
         // Maak een nieuwe reiziger aan en persisteer deze in de database
         String gbdatum = "1981-03-14";
-        Reiziger sietske = new Reiziger(2848, "S", "", "Boers", java.sql.Date.valueOf(gbdatum));
+        Reiziger sietske = new Reiziger(2849, "S", "", "Boers", java.sql.Date.valueOf(gbdatum));
         System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.save() ");
         rdao.save(sietske);
         reizigers = rdao.findAll();
@@ -112,13 +113,13 @@ public class Main {
         System.out.println("\n---------- Test Reiziger and OVChipkaart Relationship -------------");
 
         // Create a new Reiziger
-        Reiziger reiziger = new Reiziger(1011, "T", "van", "Dijk", java.sql.Date.valueOf("1990-05-20"));
+        Reiziger reiziger = new Reiziger(1012, "T", "van", "Dijk", java.sql.Date.valueOf("1990-05-20"));
         rdao.save(reiziger);
 
         // Create a new OVChipkaart for the Reiziger
-        OVChipkaart ovChipkaart = new OVChipkaart(12350, java.sql.Date.valueOf("2024-12-31"), 2, BigDecimal.valueOf(50.0), reiziger);
+        OVChipkaart ovChipkaart = new OVChipkaart(12352, java.sql.Date.valueOf("2024-12-31"), 2, BigDecimal.valueOf(50.0), reiziger);
         ovdao.save(ovChipkaart);
-        OVChipkaart ovChipkaart1 = new OVChipkaart(12351, java.sql.Date.valueOf("2024-12-31"), 2, BigDecimal.valueOf(50.0), reiziger);
+        OVChipkaart ovChipkaart1 = new OVChipkaart(12353, java.sql.Date.valueOf("2024-12-31"), 2, BigDecimal.valueOf(50.0), reiziger);
         ovdao.save(ovChipkaart1);
 
         // Find Reiziger by OVChipkaart
